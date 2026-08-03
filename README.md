@@ -71,7 +71,7 @@ Update `.env.local`:
 
 ```env
 OPENAI_API_KEY=sk-your-real-key
-OPENAI_MODEL=gpt-5-mini
+OPENAI_MODEL=gpt-4o-mini
 ```
 
 Never place the key in `app.js`, `index.html`, or another browser-side file.
@@ -99,11 +99,11 @@ npm test
 3. Keep the Framework Preset as **Other**.
 4. Add Environment Variables for Production, Preview, and Development:
    - `OPENAI_API_KEY` — your real OpenAI secret key
-   - `OPENAI_MODEL` — `gpt-5-mini`
+   - `OPENAI_MODEL` — `gpt-4o-mini`
    - `DEFAULT_SYSTEM_PROMPT` — optional
 5. Click **Deploy**.
 6. After changing an Environment Variable, redeploy the project.
-7. Open the generated `.vercel.app` URL and confirm the status says `gpt-5-mini ready`.
+7. Open the generated `.vercel.app` URL and confirm the status says `gpt-4o-mini ready`.
 
 ### CLI method
 
@@ -120,7 +120,7 @@ npx vercel --prod
 ## Verification checklist
 
 - The live URL loads on desktop and mobile.
-- The status changes to `gpt-5-mini ready`.
+- The status changes to `gpt-4o-mini ready`.
 - A question produces text progressively.
 - A follow-up uses earlier conversation context.
 - Refreshing preserves conversation history.

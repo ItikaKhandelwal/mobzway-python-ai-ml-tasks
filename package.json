@@ -1,0 +1,12 @@
+{
+  "name": "ai-powered-qna-chatbot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Level 1 AI-powered Q&A chatbot using Node.js, vanilla HTML/CSS/JS, and the OpenAI API.",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "dev": "vercel dev",
+    "test": "node --test"
+  }
+}

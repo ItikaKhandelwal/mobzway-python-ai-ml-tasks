@@ -1,0 +1,53 @@
+:root {
+  --quality-focus: color-mix(in srgb, var(--primary) 48%, transparent);
+}
+
+/* Production polish: safer mobile sizing, clearer states, and less layout jump. */
+html { scroll-behavior: smooth; }
+body { min-width: 320px; }
+
+.status-pill { max-width: min(42vw, 310px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.status-pill.error { color: var(--danger); }
+.status-pill.ready { color: var(--text); }
+
+.send-button:focus-visible,
+.stop-button:focus-visible,
+.suggestion:focus-visible,
+.icon-button:focus-visible {
+  outline: 3px solid var(--quality-focus);
+  outline-offset: 3px;
+}
+
+.message-bubble { text-wrap: pretty; }
+.message-bubble pre { max-width: 100%; }
+.message-bubble img { max-width: 100%; }
+
+/* Keep the composer usable when the browser viewport is short. */
+.chat-card { min-height: max(620px, calc(100dvh - 110px)); }
+.messages { overscroll-behavior: contain; }
+
+@media (max-width: 760px) {
+  .app-shell { width: min(100% - 18px, 1120px); padding-top: 10px; }
+  .topbar { align-items: flex-start; flex-wrap: wrap; }
+  .topbar-actions { width: 100%; justify-content: flex-end; }
+  .status-pill { order: 2; flex: 1 1 auto; max-width: none; justify-content: center; }
+  .icon-button { flex: 0 0 40px; }
+  .chat-card { border-radius: 22px; min-height: calc(100dvh - 98px); }
+  .messages { padding: 24px 14px 18px; }
+  .welcome { margin-top: 2vh; }
+  .welcome h1 { font-size: clamp(30px, 10vw, 42px); }
+  .suggestion-grid { grid-template-columns: 1fr; }
+  .suggestion { min-height: 92px; }
+  .message { grid-template-columns: 32px minmax(0, 1fr); gap: 8px; }
+  .message.user { grid-template-columns: minmax(0, 1fr) 32px; }
+  .message-avatar, .assistant-avatar { width: 32px; height: 32px; border-radius: 10px; }
+  .message-bubble { padding: 13px 14px; }
+  .composer-area { padding: 10px 10px max(12px, env(safe-area-inset-bottom)); }
+  .composer-footer { align-items: center; }
+  .keyboard-hint { display: none; }
+  .composer-meta { font-size: 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}

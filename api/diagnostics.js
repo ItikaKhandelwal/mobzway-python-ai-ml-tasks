@@ -1,21 +1,29 @@
-import { getGeminiConfig } from "../lib/gemini-service.js";
+import { getGeminiConfig, runGeminiHealthCheck } from "../lib/gemini-service.js";
 
 export default async function handler(request, response) {
   const config = getGeminiConfig();
   response.setHeader("Cache-Control", "no-store");
+  response.setHeader("Content-Type", "application/json; charset=utf-8");
 
-  if (!config.apiKey) {
-    return response.status(503).json({ ok: false, provider: "Gemini", model: config.model, configured: false, error: "GEMINI_API_KEY is not configured in the deployment." });
+  if (request.method !== "GET") {
+    return response.status(405).json({ ok: false, error: "Use GET for this diagnostic endpoint." });
   }
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(config.model)}:generateContent`;
   try {
-    const geminiResponse = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json", "x-goog-api-key": config.apiKey }, body: JSON.stringify({ contents: [{ parts: [{ text: "Reply with exactly: GEMINI_OK" }] }], generationConfig: { maxOutputTokens: 20 } }) });
-    const data = await geminiResponse.json().catch(() => null);
-    const text = data?.candidates?.[0]?.content?.parts?.map((part) => part?.text || "").join("") || "";
-    if (!geminiResponse.ok) return response.status(502).json({ ok: false, provider: "Gemini", model: config.model, configured: true, geminiStatus: geminiResponse.status, error: data?.error?.message || "Gemini rejected the diagnostic request." });
-    return response.status(200).json({ ok: text.trim() === "GEMINI_OK", provider: "Gemini", model: config.model, configured: true, geminiStatus: geminiResponse.status, responseReceived: Boolean(text), text });
+    const result = await runGeminiHealthCheck();
+    return response.status(result.ok ? 200 : 502).json({
+      provider: "Gemini",
+      configured: Boolean(config.apiKey),
+      ...result,
+    });
   } catch (error) {
-    return response.status(502).json({ ok: false, provider: "Gemini", model: config.model, configured: true, error: error?.message || "Could not connect to Gemini." });
+    console.error("Gemini diagnostic failed:", error);
+    return response.status(502).json({
+      ok: false,
+      provider: "Gemini",
+      model: config.model,
+      configured: Boolean(config.apiKey),
+      error: error?.message || "Could not run the Gemini diagnostic.",
+    });
   }
 }

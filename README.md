@@ -2,6 +2,8 @@
 
 A complete Level 1 full-stack assignment built with **Node.js + vanilla HTML/CSS/JavaScript + OpenAI API**. The chatbot securely calls OpenAI from a Vercel Function, streams the answer to the browser, remembers conversation history in local storage, and includes practical error handling.
 
+https://mobzway-python-ai-ml-tasks.vercel.app/
+
 ## Features
 
 - Secure server-side OpenAI authentication

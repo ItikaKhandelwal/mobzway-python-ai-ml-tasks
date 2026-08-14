@@ -100,10 +100,10 @@ async function checkApiStatus() {
     const data = await response.json();
 
     if (data.configured) {
-      setStatus(`${data.model} ready`, "ready");
+      setStatus(`${data.provider || "Gemini"} • ${data.model} ready`, "ready");
       elements.configBanner.hidden = true;
     } else {
-      setStatus("API key missing", "error");
+      setStatus("Gemini key missing", "error");
       elements.configBanner.hidden = false;
     }
   } catch {
@@ -446,83 +446,75 @@ function exportConversation() {
 }
 
 function openSettings() {
-  elements.systemPromptInput.value = settings.systemPrompt || DEFAULT_SYSTEM_PROMPT;
+  elements.systemPromptInput.value = settings.systemPrompt;
   updateSystemPromptCount();
   elements.settingsDialog.showModal();
 }
 
 function saveSettings() {
-  const systemPrompt = elements.systemPromptInput.value.trim();
-  if (!systemPrompt) {
-    showToast("The system prompt cannot be empty.");
-    return;
-  }
-
-  settings = { systemPrompt };
+  settings.systemPrompt = elements.systemPromptInput.value.trim() || DEFAULT_SYSTEM_PROMPT;
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
   elements.settingsDialog.close();
-  showToast("Assistant settings saved.");
+  showToast("Settings saved.");
 }
 
 function resetSettings() {
+  settings = { systemPrompt: DEFAULT_SYSTEM_PROMPT };
   elements.systemPromptInput.value = DEFAULT_SYSTEM_PROMPT;
   updateSystemPromptCount();
-}
-
-function updateSystemPromptCount() {
-  const length = elements.systemPromptInput.value.length;
-  elements.systemPromptCount.textContent = `${length.toLocaleString()} / 1,500`;
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  showToast("Settings reset to default.");
 }
 
 function applyStoredTheme() {
-  const stored = localStorage.getItem(THEME_KEY);
-  const preferredDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
-  setTheme(stored || (preferredDark ? "dark" : "light"));
+  const theme = localStorage.getItem(THEME_KEY) || "light";
+  document.documentElement.dataset.theme = theme;
+  if (elements.themeIcon) elements.themeIcon.textContent = theme === "dark" ? "☀" : "☾";
 }
 
 function toggleTheme() {
-  setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
-}
-
-function setTheme(theme) {
-  document.documentElement.dataset.theme = theme;
-  localStorage.setItem(THEME_KEY, theme);
-  elements.themeIcon.textContent = theme === "dark" ? "☀" : "☾";
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme === "dark" ? "#171a2d" : "#6d5dfc");
+  const current = document.documentElement.dataset.theme || "light";
+  const next = current === "dark" ? "light" : "dark";
+  localStorage.setItem(THEME_KEY, next);
+  applyStoredTheme();
 }
 
 function updateCharacterCount() {
-  const length = elements.promptInput.value.length;
-  elements.characterCount.textContent = `${length.toLocaleString()} / 4,000`;
+  elements.characterCount.textContent = `${elements.promptInput.value.length}/4000`;
+}
+
+function updateSystemPromptCount() {
+  elements.systemPromptCount.textContent = `${elements.systemPromptInput.value.length}/2000`;
 }
 
 function autoResizeTextarea() {
   elements.promptInput.style.height = "auto";
-  elements.promptInput.style.height = `${Math.min(elements.promptInput.scrollHeight, 170)}px`;
+  elements.promptInput.style.height = `${Math.min(elements.promptInput.scrollHeight, 220)}px`;
 }
 
 function scrollToLatest() {
   elements.messages.scrollTop = elements.messages.scrollHeight;
 }
 
-function formatTime(isoString) {
-  const date = new Date(isoString);
-  if (Number.isNaN(date.getTime())) return "";
-  return new Intl.DateTimeFormat(undefined, { hour: "numeric", minute: "2-digit" }).format(date);
+function formatTime(timestamp) {
+  if (!timestamp) return "";
+  return new Date(timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
 function loadJSON(key, fallback) {
   try {
-    const value = JSON.parse(localStorage.getItem(key));
-    return value ?? fallback;
+    const parsed = JSON.parse(localStorage.getItem(key) || "null");
+    return parsed ?? fallback;
   } catch {
     return fallback;
   }
 }
 
 function showToast(message) {
-  clearTimeout(toastTimer);
   elements.toast.textContent = message;
-  elements.toast.classList.add("visible");
-  toastTimer = setTimeout(() => elements.toast.classList.remove("visible"), 3_800);
+  elements.toast.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    elements.toast.hidden = true;
+  }, 2_800);
 }

@@ -1,5 +1,5 @@
 import { AppError, toPublicError } from "../lib/errors.js";
-import { getOpenAIConfig, streamOpenAIChat } from "../lib/openai-service.js";
+import { getGeminiConfig, streamOpenAIChat } from "../lib/gemini-service.js";
 import { validateChatPayload } from "../lib/validation.js";
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
@@ -89,7 +89,7 @@ export default async function handler(request, response) {
   try {
     enforceRateLimit(request);
 
-    const config = getOpenAIConfig();
+    const config = getGeminiConfig();
     if (!config.apiKey) {
       throw new AppError(
         "The Gemini API key is not configured. Add GEMINI_API_KEY in Vercel and redeploy.",

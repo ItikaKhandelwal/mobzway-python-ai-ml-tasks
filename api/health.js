@@ -1,7 +1,7 @@
-import { getOpenAIConfig } from "../lib/openai-service.js";
+import { getGeminiConfig } from "../lib/gemini-service.js";
 
 export default function handler(request, response) {
-  const config = getOpenAIConfig();
+  const config = getGeminiConfig();
 
   response.setHeader("Cache-Control", "no-store");
   return response.status(200).json({

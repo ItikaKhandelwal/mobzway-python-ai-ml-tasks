@@ -6,7 +6,7 @@ export default function handler(request, response) {
   response.setHeader("Cache-Control", "no-store");
   return response.status(200).json({
     ok: true,
-    provider: "OpenAI",
+    provider: "Gemini",
     model: config.model,
     configured: Boolean(config.apiKey),
     timestamp: new Date().toISOString(),

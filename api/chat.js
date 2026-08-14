@@ -92,7 +92,7 @@ export default async function handler(request, response) {
     const config = getOpenAIConfig();
     if (!config.apiKey) {
       throw new AppError(
-        "The OpenAI API key is not configured. Add OPENAI_API_KEY in Vercel and redeploy.",
+        "The Gemini API key is not configured. Add GEMINI_API_KEY in Vercel and redeploy.",
         503,
         "API_KEY_NOT_CONFIGURED",
       );
@@ -116,7 +116,7 @@ export default async function handler(request, response) {
     const send = (event) => response.write(`${JSON.stringify(event)}\n`);
 
     try {
-      send({ type: "meta", provider: "OpenAI", model: config.model });
+      send({ type: "meta", provider: "Gemini", model: config.model });
 
       for await (const event of streamOpenAIChat({
         messages,
